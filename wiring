@@ -1,0 +1,48 @@
+
+```markdown name=docs/wiring-diagram.md
+# Wiring Diagram Final
+
+## 1) Master (ESP32)
+
+### LCD 20x4 I2C
+- VCC -> 5V ESP32
+- GND -> GND ESP32
+- SDA -> GPIO21
+- SCL -> GPIO22
+
+### Buzzer/Siren via transistor NPN
+- GPIO25 -> resistor 1k -> Base transistor
+- Emitter -> GND
+- Collector -> negatif buzzer/siren
+- Positif buzzer/siren -> +V supply (5V/12V sesuai beban)
+
+Opsional:
+- Resistor 10k base ke GND
+- Flyback diode jika beban induktif
+
+### Tombol
+- ACK button: GPIO26 ke GND (INPUT_PULLUP)
+- Config button: GPIO27 ke GND (INPUT_PULLUP)
+
+---
+
+## 2) Slave (ESP8266) x3
+
+### Tombol Panic
+- D5/GPIO14 ke tombol NO, sisi lain ke GND (INPUT_PULLUP)
+
+### LED status (opsional)
+- D6/GPIO12 -> resistor 330R -> anoda LED
+- katoda LED -> GND
+
+### Tombol Config (opsional)
+- D3/GPIO0 ke tombol NO, sisi lain ke GND (INPUT_PULLUP)
+- Hold 5 detik untuk reset config & masuk AP setup
+
+---
+
+## 3) Topologi Jaringan
+
+- Semua device ke WiFi yang sama (subnet sama).
+- Master punya IP yang diketahui (disarankan DHCP reservation / static lease).
+- Slave kirim event ke `http://<IP_MASTER>/api/event`.
